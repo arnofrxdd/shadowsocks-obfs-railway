@@ -1,13 +1,14 @@
-# === Dockerfile ===
 FROM debian:bullseye
+
+# Set noninteractive mode for apt
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    iproute2 iptables shadowsocks-libev \
-    strongswan strongswan-plugin-eap-mschapv2 \
-    libstrongswan-extra-plugins \
-    obfs4proxy curl tini && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    iproute2 iptables curl tini \
+    shadowsocks-libev simple-obfs \
+    strongswan libstrongswan-extra-plugins \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy config files
 COPY entrypoint.sh /entrypoint.sh
