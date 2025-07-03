@@ -1,18 +1,20 @@
+# === Dockerfile ===
 FROM debian:bullseye
 
-RUN apt update && apt install -y shadowsocks-libev simple-obfs
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    iproute2 iptables shadowsocks-libev \
+    strongswan strongswan-plugin-eap-mschapv2 \
+    libstrongswan-extra-plugins \
+    obfs4proxy curl tini && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV SERVER_ADDR=0.0.0.0 \
-    SERVER_PORT=${SERVER_PORT:-8388} \
-    PASSWORD=${PASSWORD} \
-    METHOD=${METHOD:-chacha20-ietf-poly1305} \
-    OBFS=${OBFS:-http} \
-    OBFS_DOMAIN=${OBFS_DOMAIN}
+# Copy config files
+COPY entrypoint.sh /entrypoint.sh
+COPY shadowsocks.json /etc/shadowsocks-libev/config.json
+COPY ipsec.conf /etc/ipsec.conf
+COPY ipsec.secrets /etc/ipsec.secrets
 
-CMD ss-server \
-    -s $SERVER_ADDR \
-    -p $SERVER_PORT \
-    -k $PASSWORD \
-    -m $METHOD \
-    --plugin obfs-server \
-    --plugin-opts "obfs=$OBFS;obfs-host=$OBFS_DOMAIN"
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
