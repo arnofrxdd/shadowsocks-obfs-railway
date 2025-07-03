@@ -18,7 +18,12 @@ echo "[DEBUG] Pinging VPN server (DNS check)"
 ping -c 3 public-vpn-259.opengw.net || echo "Ping to VPN server failed"
 
 echo "[+] Bringing up the tunnel..."
-ipsec up myvpn || echo "[!] VPN setup failed"
+ipsec up myvpn || {
+    echo "[!] VPN setup failed"
+    ipsec statusall
+    journalctl -u strongswan --no-pager || true
+}
+
 
 echo "[+] Checking VPN status..."
 ipsec statusall || echo "[!] VPN status failed"
