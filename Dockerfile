@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    iproute2 iptables curl tini \
+    iproute2 iputils-ping curl tini \
     shadowsocks-libev simple-obfs \
     strongswan libstrongswan-extra-plugins \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
