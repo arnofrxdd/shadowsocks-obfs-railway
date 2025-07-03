@@ -1,21 +1,11 @@
-FROM debian:bullseye
+FROM debian:bullseye-slim
 
-# Set noninteractive mode for apt
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install dependencies
 RUN apt-get update && apt-get install -y \
-    iproute2 iputils-ping curl tini \
-    shadowsocks-libev simple-obfs \
-    strongswan libstrongswan-extra-plugins \
+    openvpn shadowsocks-libev simple-obfs curl tini iproute2 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy config files
 COPY entrypoint.sh /entrypoint.sh
-COPY shadowsocks.json /etc/shadowsocks-libev/config.json
-COPY ipsec.conf /etc/ipsec.conf
-COPY ipsec.secrets /etc/ipsec.secrets
-
-RUN chmod +x /entrypoint.sh
+COPY shadowsocks.json /etc/shadowsocks/shadowsocks.json
+COPY vpn.ovpn /etc/openvpn/vpn.ovpn
 
 ENTRYPOINT ["/entrypoint.sh"]
