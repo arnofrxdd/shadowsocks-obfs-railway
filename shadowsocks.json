@@ -1,0 +1,12 @@
+{
+    "server":"0.0.0.0",
+    "server_port":8388,
+    "password":"cgfree",
+    "timeout":300,
+    "method":"aes-256-gcm",
+    "plugin":"obfs-server",
+    "plugin_opts":"obfs=http",
+    "fast_open": false,
+    "reuse_port": true,
+    "no_delay": true
+}
