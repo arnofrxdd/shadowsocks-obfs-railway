@@ -9,19 +9,20 @@ echo "[+] Waiting for VPN tunnel to establish..."
 sleep 5
 
 echo "[+] Bringing up the tunnel..."
-ipsec up myvpn
+ipsec up myvpn || echo "[!] VPN setup failed"
 
-# Optional: Show VPN status
-ipsec statusall
+echo "[+] Checking VPN status..."
+ipsec statusall || echo "[!] VPN status failed"
 
-echo "[+] Adding default route via VPN..."
-# Wait for tunnel interface (usually `ipsec0` or virtual one)
+echo "[+] Checking current IP (via VPN)..."
+curl -s https://icanhazip.com || echo "[!] curl failed - no internet or VPN broken"
+
+echo "[+] Waiting before routing..."
 sleep 5
 
-# force all outbound through VPN
-ip route flush table main
-ip route add default dev ipsec0
+echo "[+] Adding default route via VPN..."
+ip route flush table main || echo "[!] Failed to flush route table"
+ip route add default dev ipsec0 || echo "[!] Failed to add default route"
 
-echo "[+] Starting Shadowsocks with obfs..."
+echo "[+] Launching Shadowsocks with obfs..."
 ss-server -c /etc/shadowsocks/shadowsocks.json --plugin obfs-server --plugin-opts "obfs=http"
-
